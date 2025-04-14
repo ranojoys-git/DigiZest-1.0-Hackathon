@@ -1,23 +1,28 @@
 import threading
-import cv2
-from deepface import DeepFace
+import cv2    #Capturing video, image processing, drawing frames
+from deepface import DeepFace #Verify detected image against reference images
 
+#Loading Haar Cascades Classifier
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
+#Video capture object to read frames from the default camera
 cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)  # Use the default camera (usually index 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)    #Resolution: 640x480 pixels
 
 counter = 0
 
+#Verification variables
 rano_match = False
 pri_match = False
 face_match = False
 no_person = False  # Added a flag for no person detection
 
+#Loading images
 reference_img1 = cv2.imread("Ranojoy Pic.jpg")
 reference_img2 = cv2.imread("Priyanshi Pic.jpg")
 
+#Check frame against reference image
 def check_face(frame):
     global rano_match, pri_match, face_match, no_person
     try:
@@ -37,7 +42,7 @@ def check_face(frame):
         no_person = True  # Set the flag to indicate no person detected
 
 while True:
-    # Read a frame from the camera
+    # Read a frame from the camera: ret (to see if image was captured), frame contains image data
     ret, frame = cap.read()
 
     # Convert the frame to grayscale (face detection works better in grayscale)
@@ -51,9 +56,9 @@ while True:
         cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
 
     if ret:
-        if counter % 30 == 0:
+        if counter % 30 == 0:    #Runs verification every 30 frames
             try:
-                threading.Thread(target=check_face, args=(frame.copy(),)).start()
+                threading.Thread(target=check_face, args=(frame.copy(),)).start()    #Starts new thread and passes copy of the image for verification
             except Exception as e:
                 print(f"Error in threading: {e}")
                 pass
@@ -67,15 +72,7 @@ while True:
             cv2.putText(frame, "NO PERSON!", (20, 450), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 3)
         else:
             cv2.putText(frame, "INTRUDER!", (20, 450), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 3)
-            '''
-            # Convert the text to speech
-            tts = gTTS(text="Intruder", lang="en")
-            tts.save('intruder.mp3')
-            # Play the audio
-            play_audio('intruder.mp3')
-
-            # play_audio(audio_file)
-            '''
+            
 
     cv2.imshow("Face Recognition with frame", frame)
 
