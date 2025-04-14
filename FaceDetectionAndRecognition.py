@@ -10,7 +10,7 @@ cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)  # Use the default camera (usually inde
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)    #Resolution: 640x480 pixels
 
-counter = 0
+counter = 0    #To run verification every 30 frames
 
 #Verification variables
 rano_match = False
